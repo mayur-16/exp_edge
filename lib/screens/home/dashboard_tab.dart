@@ -14,7 +14,8 @@ class _DashboardTabState extends State<DashboardTab> {
   Organization? _organization;
   int _totalSites = 0;
   int _totalExpenses = 0;
-  double _monthlyTotal = 0;
+  bool _isLoading = true;
+  String? _errorMessage;
 
   @override
   void initState() {
@@ -23,19 +24,76 @@ class _DashboardTabState extends State<DashboardTab> {
   }
 
   Future<void> _loadData() async {
-    final org = await AuthService().getUserOrganization();
-    // In a real app, fetch actual stats from database
     setState(() {
-      _organization = org;
-      _totalSites = org?.totalSites ?? 0;
-      _totalExpenses = org?.totalExpenses ?? 0;
+      _isLoading = true;
+      _errorMessage = null;
     });
+
+    try {
+      final org = await AuthService().getUserOrganization();
+      
+      if (org == null) {
+        setState(() {
+          _errorMessage = 'Organization not found';
+          _isLoading = false;
+        });
+        return;
+      }
+
+      setState(() {
+        _organization = org;
+        _totalSites = org.totalSites;
+        _totalExpenses = org.totalExpenses;
+        _isLoading = false;
+      });
+    } catch (e) {
+      setState(() {
+        _errorMessage = 'Error: $e';
+        _isLoading = false;
+      });
+      print('Dashboard load error: $e'); // Debug print
+    }
   }
 
   @override
   Widget build(BuildContext context) {
-    if (_organization == null) {
+    if (_isLoading) {
       return const Center(child: CircularProgressIndicator());
+    }
+
+    if (_errorMessage != null) {
+      return Center(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Icon(Icons.error_outline, size: 64, color: Colors.red),
+            SizedBox(height: 16),
+            Text(
+              'Error Loading Dashboard',
+              style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+            ),
+            SizedBox(height: 8),
+            Padding(
+              padding: EdgeInsets.all(16),
+              child: Text(
+                _errorMessage!,
+                textAlign: TextAlign.center,
+                style: TextStyle(color: Colors.grey[600]),
+              ),
+            ),
+            SizedBox(height: 16),
+            ElevatedButton.icon(
+              onPressed: _loadData,
+              icon: Icon(Icons.refresh),
+              label: Text('Retry'),
+            ),
+          ],
+        ),
+      );
+    }
+
+    if (_organization == null) {
+      return const Center(child: Text('No organization data'));
     }
 
     return RefreshIndicator(
@@ -124,19 +182,6 @@ class _DashboardTabState extends State<DashboardTab> {
                     '${_organization!.daysLeft} days',
                   ),
                 ],
-              ),
-            ),
-          ),
-          const SizedBox(height: 16),
-          Card(
-            child: ListTile(
-              leading: Icon(
-                Icons.tips_and_updates_outlined,
-                color: Colors.amber.shade700,
-              ),
-              title: const Text('Quick Tip'),
-              subtitle: const Text(
-                'Add expenses regularly to keep track of your project costs in real-time.',
               ),
             ),
           ),

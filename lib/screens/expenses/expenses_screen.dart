@@ -290,7 +290,7 @@ class _ExpensesScreenState extends ConsumerState<ExpensesScreen> {
                           ],
                         ),
                         trailing: Column(
-                          mainAxisAlignment: MainAxisAlignment.center,
+                          mainAxisAlignment: MainAxisAlignment.start,
                           crossAxisAlignment: CrossAxisAlignment.end,
                           children: [
                             Text(
@@ -300,44 +300,47 @@ class _ExpensesScreenState extends ConsumerState<ExpensesScreen> {
                                 fontWeight: FontWeight.bold,
                               ),
                             ),
-                            const SizedBox(height: 4),
-                            PopupMenuButton(
-                              padding: EdgeInsets.zero,
-                              itemBuilder: (context) => [
-                                const PopupMenuItem(
-                                  value: 'edit',
-                                  child: Row(
-                                    children: [
-                                      Icon(Icons.edit_outlined),
-                                      SizedBox(width: 8),
-                                      Text('Edit'),
-                                    ],
-                                  ),
-                                ),
-                                const PopupMenuItem(
-                                  value: 'delete',
-                                  child: Row(
-                                    children: [
-                                      Icon(Icons.delete_outline, color: Colors.red),
-                                      SizedBox(width: 8),
-                                      Text('Delete', style: TextStyle(color: Colors.red)),
-                                    ],
-                                  ),
-                                ),
-                              ],
-                              onSelected: (value) async {
-                                if (value == 'edit') {
-                                  final result = await Navigator.push(
-                                    context,
-                                    MaterialPageRoute(
-                                      builder: (_) => AddEditExpenseScreen(expense: expense),
+                            const SizedBox(height: 1),
+                            Flexible(
+                              child: PopupMenuButton(
+                                padding: EdgeInsets.zero,
+                                iconSize: 14,
+                                itemBuilder: (context) => [
+                                  const PopupMenuItem(
+                                    value: 'edit',
+                                    child: Row(
+                                      children: [
+                                        Icon(Icons.edit_outlined),
+                                        SizedBox(width: 8),
+                                        Text('Edit'),
+                                      ],
                                     ),
-                                  );
-                                  if (result == true) _loadExpenses();
-                                } else if (value == 'delete') {
-                                  _deleteExpense(expense);
-                                }
-                              },
+                                  ),
+                                  const PopupMenuItem(
+                                    value: 'delete',
+                                    child: Row(
+                                      children: [
+                                        Icon(Icons.delete_outline, color: Colors.red),
+                                        SizedBox(width: 8),
+                                        Text('Delete', style: TextStyle(color: Colors.red)),
+                                      ],
+                                    ),
+                                  ),
+                                ],
+                                onSelected: (value) async {
+                                  if (value == 'edit') {
+                                    final result = await Navigator.push(
+                                      context,
+                                      MaterialPageRoute(
+                                        builder: (_) => AddEditExpenseScreen(expense: expense),
+                                      ),
+                                    );
+                                    if (result == true) _loadExpenses();
+                                  } else if (value == 'delete') {
+                                    _deleteExpense(expense);
+                                  }
+                                },
+                              ),
                             ),
                           ],
                         ),
