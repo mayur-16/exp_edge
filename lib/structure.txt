@@ -1,0 +1,42 @@
+.
+├── core
+│   └── config
+│       └── supabase_config.dart
+├── main.dart
+├── models
+│   ├── expense.dart
+│   ├── organization.dart
+│   ├── site.dart
+│   ├── user_model.dart
+│   └── vendor.dart
+├── screens
+│   ├── auth
+│   │   ├── login_screen.dart
+│   │   └── register_screen.dart
+│   ├── expenses
+│   │   ├── add_edit_expense_screen.dart
+│   │   └── expenses_screen.dart
+│   ├── home
+│   │   ├── dashboard_tab.dart
+│   │   ├── home_screen.dart
+│   │   └── widgets
+│   │       ├── dashboard_card.dart
+│   │       └── subscription_warning_dialog.dart
+│   ├── profile
+│   │   └── profile_screen.dart
+│   ├── sites
+│   │   ├── add_edit_site_screen.dart
+│   │   └── sites_screen.dart
+│   ├── splash_screen.dart
+│   ├── subscription_expired_screen.dart
+│   └── vendors
+│       ├── add_edit_vendor_screen.dart
+│       └── vendors_screen.dart
+├── services
+│   ├── auth_service.dart
+│   ├── expense_service.dart
+│   ├── site_service.dart
+│   └── vendor_service.dart
+└── structure.txt
+
+13 directories, 27 files
