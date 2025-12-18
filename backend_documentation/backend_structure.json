@@ -1,31 +1,102 @@
-{
-  "database": "PostgreSQL",
-  "provider": "Supabase",
-  "version": "1.0.0",
-  "tables": {
-    "organizations": {
-      "purpose": "Multi-tenant root - one per client company",
-      "columns": [
-        {"name": "id", "type": "UUID", "primary_key": true},
-        {"name": "name", "type": "TEXT", "unique": true, "not_null": true},
-        {"name": "email", "type": "TEXT", "unique": true, "not_null": true},
-        {"name": "subscription_status", "type": "TEXT", "default": "trial"},
-        {"name": "trial_end_date", "type": "TIMESTAMP"}
-      ],
-      "relationships": [
-        {"type": "1:N", "with": "users"},
-        {"type": "1:N", "with": "sites"},
-        {"type": "1:N", "with": "expenses"}
-      ]
-    }
+[
+  {
+    "schemaname": "public",
+    "tablename": "audit_logs",
+    "policyname": "Users view own audit logs",
+    "permissive": "PERMISSIVE",
+    "roles": "{public}",
+    "cmd": "SELECT",
+    "qual": "(organization_id IN ( SELECT users.organization_id\n   FROM users\n  WHERE (users.id = auth.uid())))",
+    "with_check": null
   },
-  "rls_policies": {
-    "organizations": ["Users can view own org"],
-    "expenses": ["Users access own expenses"]
+  {
+    "schemaname": "public",
+    "tablename": "expenses",
+    "policyname": "Users access own expenses",
+    "permissive": "PERMISSIVE",
+    "roles": "{public}",
+    "cmd": "ALL",
+    "qual": "(organization_id IN ( SELECT users.organization_id\n   FROM users\n  WHERE (users.id = auth.uid())))",
+    "with_check": null
   },
-  "functions": [
-    "generate_invite_token()",
-    "validate_invite_token(token)",
-    "update_org_stats()"
-  ]
-}
+  {
+    "schemaname": "public",
+    "tablename": "invite_tokens",
+    "policyname": "Service role full access",
+    "permissive": "PERMISSIVE",
+    "roles": "{service_role}",
+    "cmd": "ALL",
+    "qual": "true",
+    "with_check": "true"
+  },
+  {
+    "schemaname": "public",
+    "tablename": "invite_tokens",
+    "policyname": "Users view own invites",
+    "permissive": "PERMISSIVE",
+    "roles": "{authenticated}",
+    "cmd": "SELECT",
+    "qual": "((email = (auth.jwt() ->> 'email'::text)) AND (NOT used))",
+    "with_check": null
+  },
+  {
+    "schemaname": "public",
+    "tablename": "sites",
+    "policyname": "Users access own sites",
+    "permissive": "PERMISSIVE",
+    "roles": "{public}",
+    "cmd": "ALL",
+    "qual": "(organization_id IN ( SELECT users.organization_id\n   FROM users\n  WHERE (users.id = auth.uid())))",
+    "with_check": null
+  },
+  {
+    "schemaname": "public",
+    "tablename": "users",
+    "policyname": "Service role full access users",
+    "permissive": "PERMISSIVE",
+    "roles": "{service_role}",
+    "cmd": "ALL",
+    "qual": "true",
+    "with_check": "true"
+  },
+  {
+    "schemaname": "public",
+    "tablename": "users",
+    "policyname": "Users insert own profile",
+    "permissive": "PERMISSIVE",
+    "roles": "{authenticated}",
+    "cmd": "INSERT",
+    "qual": null,
+    "with_check": "(auth.uid() = id)"
+  },
+  {
+    "schemaname": "public",
+    "tablename": "users",
+    "policyname": "Users select own profile",
+    "permissive": "PERMISSIVE",
+    "roles": "{authenticated}",
+    "cmd": "SELECT",
+    "qual": "(auth.uid() = id)",
+    "with_check": null
+  },
+  {
+    "schemaname": "public",
+    "tablename": "users",
+    "policyname": "Users update own profile",
+    "permissive": "PERMISSIVE",
+    "roles": "{authenticated}",
+    "cmd": "UPDATE",
+    "qual": "(auth.uid() = id)",
+    "with_check": null
+  },
+  {
+    "schemaname": "public",
+    "tablename": "vendors",
+    "policyname": "Users access own vendors",
+    "permissive": "PERMISSIVE",
+    "roles": "{public}",
+    "cmd": "ALL",
+    "qual": "(organization_id IN ( SELECT users.organization_id\n   FROM users\n  WHERE (users.id = auth.uid())))",
+    "with_check": null
+  }
+]

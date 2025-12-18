@@ -46,7 +46,7 @@ class SiteService {
         .map((json) => Site.fromJson(json))
         .toList();
 
-    final total = response.count ?? 0;
+    final total = response.count ;
     final hasMore = (offset + limit) < total;
 
     return {

@@ -47,7 +47,7 @@ class VendorService {
         .map((json) => Vendor.fromJson(json))
         .toList();
 
-    final total = response.count ?? 0;
+    final total = response.count ;
     final hasMore = (offset + limit) < total;
 
     return {

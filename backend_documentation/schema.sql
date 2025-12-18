@@ -1,4 +1,5 @@
-
+-- WARNING: This schema is for context only and is not meant to be run.
+-- Table order and constraints may not be valid for execution.
 
 CREATE TABLE public.audit_logs (
   id uuid NOT NULL DEFAULT uuid_generate_v4(),
@@ -35,6 +36,18 @@ CREATE TABLE public.expenses (
   CONSTRAINT expenses_site_id_fkey FOREIGN KEY (site_id) REFERENCES public.sites(id),
   CONSTRAINT expenses_vendor_id_fkey FOREIGN KEY (vendor_id) REFERENCES public.vendors(id),
   CONSTRAINT expenses_created_by_fkey FOREIGN KEY (created_by) REFERENCES public.users(id)
+);
+CREATE TABLE public.invite_tokens (
+  id uuid NOT NULL DEFAULT uuid_generate_v4(),
+  organization_id uuid,
+  email text NOT NULL,
+  token text NOT NULL UNIQUE,
+  role text DEFAULT 'admin'::text CHECK (role = ANY (ARRAY['admin'::text, 'manager'::text, 'accountant'::text])),
+  expires_at timestamp with time zone NOT NULL,
+  used boolean DEFAULT false,
+  created_at timestamp with time zone DEFAULT now(),
+  CONSTRAINT invite_tokens_pkey PRIMARY KEY (id),
+  CONSTRAINT invite_tokens_organization_id_fkey FOREIGN KEY (organization_id) REFERENCES public.organizations(id)
 );
 CREATE TABLE public.organizations (
   id uuid NOT NULL DEFAULT uuid_generate_v4(),

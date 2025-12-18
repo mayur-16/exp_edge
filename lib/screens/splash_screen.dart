@@ -1,6 +1,3 @@
-import 'package:exp_edge/screens/auth/biometric_prompt_screen.dart';
-import 'package:exp_edge/screens/auth/invite_registration_screen.dart';
-import '../core/config/supabase_config.dart';
 import 'package:exp_edge/services/biometric_service.dart';
 import 'package:flutter/material.dart';
 import '../services/auth_service.dart';
@@ -9,8 +6,6 @@ import 'home/home_screen.dart';
 import 'subscription_expired_screen.dart';
 
 class SplashScreen extends StatefulWidget {
-
-
   const SplashScreen({super.key});
 
   @override
@@ -18,21 +13,20 @@ class SplashScreen extends StatefulWidget {
 }
 
 class _SplashScreenState extends State<SplashScreen> {
-
   @override
   void initState() {
     super.initState();
     _checkAuth();
   }
 
-    Future<void> _checkAuth() async {
+  Future<void> _checkAuth() async {
     await Future.delayed(const Duration(seconds: 2));
 
     if (!mounted) return;
 
     // Normal auth flow
     final authService = AuthService();
-    
+
     if (!authService.isSignedIn) {
       Navigator.pushReplacement(
         context,
@@ -43,11 +37,11 @@ class _SplashScreenState extends State<SplashScreen> {
 
     // User is signed in - check if biometric is enabled
     final isBiometricEnabled = await BiometricService.isBiometricEnabled();
-    
+
     if (isBiometricEnabled) {
       // Show biometric prompt
       final authenticated = await BiometricService.authenticate();
-      
+
       if (!authenticated) {
         // Biometric failed - logout and go to login screen
         await authService.signOut();
@@ -69,7 +63,7 @@ class _SplashScreenState extends State<SplashScreen> {
 
     // Biometric passed or not enabled - check subscription status
     final org = await authService.getUserOrganization();
-    
+
     if (org == null) {
       Navigator.pushReplacement(
         context,
@@ -93,7 +87,7 @@ class _SplashScreenState extends State<SplashScreen> {
     }
   }
 
- @override
+  @override
   Widget build(BuildContext context) {
     return Scaffold(
       body: Container(

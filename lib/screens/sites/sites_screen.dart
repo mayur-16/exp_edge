@@ -22,8 +22,7 @@ class _SitesScreenState extends ConsumerState<SitesScreen> {
 final int _itemsPerPage = 20;
 bool _hasMore = true;
 bool _isLoadingMore = false;
-int _totalCount = 0;
-final ScrollController _scrollController = ScrollController();
+
 Timer? _debounceTimer;
   String _searchQuery = '';
 
@@ -51,7 +50,6 @@ Timer? _debounceTimer;
       setState(() {
         _sites = result['data'] as List<Site>;
         _hasMore = result['hasMore'] as bool;
-        _totalCount = result['total'] as int;
         _isLoading = false;
       });
     }
