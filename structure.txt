@@ -1,0 +1,69 @@
+.
+├── .env
+├── .flutter-plugins-dependencies
+├── .gitignore
+├── .metadata
+├── README.md
+├── analysis_options.yaml
+├── assets
+│   └── icon
+│       └── wallet.png
+├── backend_documentation
+│   ├── backend_structure.json
+│   └── schema.sql
+├── devtools_options.yaml
+├── exp_edge.iml
+├── lib
+│   ├── core
+│   │   └── config
+│   │       └── supabase_config.dart
+│   ├── main.dart
+│   ├── models
+│   │   ├── expense.dart
+│   │   ├── organization.dart
+│   │   ├── site.dart
+│   │   ├── user_model.dart
+│   │   └── vendor.dart
+│   ├── screens
+│   │   ├── auth
+│   │   │   ├── biometric_prompt_screen.dart
+│   │   │   ├── invite_registration_screen.dart
+│   │   │   └── login_screen.dart
+│   │   ├── expenses
+│   │   │   ├── add_edit_expense_screen.dart
+│   │   │   ├── expense_detail_screen.dart
+│   │   │   ├── expenses_screen.dart
+│   │   │   └── vendor_expenses_screen.dart
+│   │   ├── home
+│   │   │   ├── dashboard_tab.dart
+│   │   │   ├── home_screen.dart
+│   │   │   └── widgets
+│   │   │       ├── dashboard_card.dart
+│   │   │       └── subscription_warning_dialog.dart
+│   │   ├── profile
+│   │   │   └── profile_screen.dart
+│   │   ├── sites
+│   │   │   ├── add_edit_site_screen.dart
+│   │   │   ├── site_detail_screen.dart
+│   │   │   └── sites_screen.dart
+│   │   ├── splash_screen.dart
+│   │   ├── subscription_expired_screen.dart
+│   │   └── vendors
+│   │       ├── add_edit_vendor_screen.dart
+│   │       ├── vendor_detail_screen.dart
+│   │       └── vendors_screen.dart
+│   ├── services
+│   │   ├── auth_service.dart
+│   │   ├── biometric_service.dart
+│   │   ├── contactus_service.dart
+│   │   ├── expense_service.dart
+│   │   ├── export_service.dart
+│   │   ├── invite_service.dart
+│   │   ├── site_service.dart
+│   │   └── vendor_service.dart
+│   └── structure.txt
+├── pubspec.lock
+├── pubspec.yaml
+└── structure.txt
+
+17 directories, 50 files
