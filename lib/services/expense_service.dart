@@ -1,4 +1,5 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
 import '../core/config/supabase_config.dart';
 import '../models/expense.dart';
 import 'auth_service.dart';
@@ -11,22 +12,63 @@ class ExpenseService {
 
   ExpenseService(this.ref);
 
-  Future<List<Expense>> getExpenses({String? siteId}) async {
+  Future<Map<String, dynamic>> getExpensesPaginated({
+    String? siteId,
+    String? searchQuery,
+    int page = 1,
+    int limit = 20,
+  }) async {
     final user = await ref.read(authServiceProvider).getCurrentUser();
-    if (user == null) return [];
+    if (user == null) return {'data': [], 'hasMore': false, 'total': 0};
 
+    final offset = (page - 1) * limit;
+
+    // Build query
     var query = _supabase
         .from('expenses')
         .select('*, sites(name), vendors(name)')
         .eq('organization_id', user.organizationId);
 
+    // Filter by site if provided
     if (siteId != null) {
       query = query.eq('site_id', siteId);
     }
 
-    final response = await query.order('expense_date', ascending: false);
+    // Search if query provided
+    if (searchQuery != null && searchQuery.isNotEmpty) {
+      query = query.or('description.ilike.%$searchQuery%');
+    }
 
-    return (response as List).map((json) => Expense.fromJson(json)).toList();
+    // Apply pagination and ordering, then get count
+    final response = await query
+        .order('expense_date', ascending: false)
+        .order('created_at', ascending: false)
+        .range(offset, offset + limit - 1)
+        .count(CountOption.exact);
+
+    final expenses = (response.data as List)
+        .map((json) => Expense.fromJson(json))
+        .toList();
+
+    final total = response.count;
+    final hasMore = (offset + limit) < total;
+
+    return {
+      'data': expenses,
+      'hasMore': hasMore,
+      'total': total,
+      'currentPage': page,
+    };
+  }
+
+  // Keep old method for backward compatibility
+  Future<List<Expense>> getExpenses({String? siteId}) async {
+    final result = await getExpensesPaginated(
+      siteId: siteId,
+      page: 1,
+      limit: 1000, // Large limit for non-paginated calls
+    );
+    return result['data'] as List<Expense>;
   }
 
   Future<Expense> createExpense(Expense expense) async {

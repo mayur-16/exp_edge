@@ -48,10 +48,10 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   final List<Widget> _screens = [
-    const DashboardTab(),
     const SitesScreen(),
     const ExpensesScreen(),
     const VendorsScreen(),
+    const DashboardTab(),
   ];
 
   @override
@@ -99,11 +99,7 @@ class _HomeScreenState extends State<HomeScreen> {
           setState(() => _selectedIndex = index);
         },
         destinations: const [
-          NavigationDestination(
-            icon: Icon(Icons.dashboard_outlined),
-            selectedIcon: Icon(Icons.dashboard),
-            label: 'Dashboard',
-          ),
+          
           NavigationDestination(
             icon: Icon(Icons.location_city_outlined),
             selectedIcon: Icon(Icons.location_city),
@@ -118,6 +114,11 @@ class _HomeScreenState extends State<HomeScreen> {
             icon: Icon(Icons.people_outline),
             selectedIcon: Icon(Icons.people),
             label: 'Vendors',
+          ),
+          NavigationDestination(
+            icon: Icon(Icons.dashboard_outlined),
+            selectedIcon: Icon(Icons.dashboard),
+            label: 'Dashboard',
           ),
         ],
       ),

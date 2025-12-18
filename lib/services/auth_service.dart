@@ -8,6 +8,62 @@ final authServiceProvider = Provider((ref) => AuthService());
 class AuthService {
   final _supabase = SupabaseConfig.client;
 
+  Future<Map<String, dynamic>> signUpWithInvite({
+  required String token,
+  required String fullName,
+  required String password,
+}) async {
+  try {
+    // Validate invite first
+    final inviteResponse = await _supabase.rpc('validate_invite_token', params: {
+      'token_input': token,
+    });
+
+    if (inviteResponse == null || inviteResponse.isEmpty) {
+      throw Exception('Invalid invitation token');
+    }
+
+    final inviteData = inviteResponse[0];
+    
+    if (!inviteData['is_valid']) {
+      throw Exception('Invitation has expired or been used');
+    }
+
+    final email = inviteData['email'] as String;
+    final organizationId = inviteData['organization_id'] as String;
+    final role = inviteData['role'] as String;
+
+    // Create auth user
+    final authResponse = await _supabase.auth.signUp(
+      email: email,
+      password: password,
+    );
+
+    if (authResponse.user == null) {
+      throw Exception('Failed to create user');
+    }
+
+    // Create user profile
+    await _supabase.from('users').insert({
+      'id': authResponse.user!.id,
+      'organization_id': organizationId,
+      'email': email,
+      'full_name': fullName,
+      'role': role,
+    });
+
+    // Mark invite as used
+    await _supabase
+        .from('invite_tokens')
+        .update({'used': true})
+        .eq('token', token);
+
+    return {'success': true, 'message': 'Account created successfully'};
+  } catch (e) {
+    return {'success': false, 'message': e.toString()};
+  }
+}
+
   Future<Map<String, dynamic>> signUp({
     required String email,
     required String password,

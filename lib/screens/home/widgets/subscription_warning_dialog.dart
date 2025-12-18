@@ -1,3 +1,4 @@
+import 'package:exp_edge/services/contactus_service.dart';
 import 'package:flutter/material.dart';
 
 class SubscriptionWarningDialog extends StatelessWidget {
@@ -13,11 +14,16 @@ class SubscriptionWarningDialog extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return AlertDialog(
+      titleTextStyle: TextStyle(
+        fontSize: 16,
+        fontWeight: FontWeight.bold,
+        color: Colors.black,
+      ),
       title: Row(
         children: [
           Icon(Icons.warning_amber_rounded, color: Colors.orange),
           const SizedBox(width: 8),
-          const Text('Subscription Expiring Soon'),
+          const Text('Subscription Expiring Soon',),
         ],
       ),
       content: Text(
@@ -36,7 +42,7 @@ class SubscriptionWarningDialog extends StatelessWidget {
         ElevatedButton(
           onPressed: () {
             Navigator.pop(context);
-            // In real app: open WhatsApp/call/email
+            ContactusService.openWhatsApp(context: context);
           },
           child: const Text('Contact Support'),
         ),

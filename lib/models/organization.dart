@@ -82,4 +82,25 @@ class Organization {
   }
 
   bool get showWarning => daysLeft <= 3 && daysLeft >= 0;
+
+
+  bool get canAccess {
+  // First check: Organization must be active (not suspended)
+  if (!isActive) return false;
+  
+  // Second check: Subscription must be valid
+  final now = DateTime.now();
+  
+  if (subscriptionStatus == 'trial' && trialEndDate != null) {
+    return now.isBefore(trialEndDate!);
+  } else if (subscriptionStatus == 'active' && subscriptionEndDate != null) {
+    return now.isBefore(subscriptionEndDate!);
+  } else if (subscriptionStatus == 'expired') {
+    return false;
+  }
+  
+  return false;
 }
+
+}
+

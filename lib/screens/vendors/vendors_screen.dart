@@ -1,3 +1,5 @@
+import 'package:exp_edge/screens/expenses/vendor_expenses_screen.dart';
+import 'package:exp_edge/screens/vendors/vendor_detail_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../models/vendor.dart';
@@ -35,9 +37,9 @@ class _VendorsScreenState extends ConsumerState<VendorsScreen> {
     } catch (e) {
       if (mounted) {
         setState(() => _isLoading = false);
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Error loading vendors: $e')),
-        );
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(SnackBar(content: Text('Error loading vendors: $e')));
       }
     }
   }
@@ -73,9 +75,9 @@ class _VendorsScreenState extends ConsumerState<VendorsScreen> {
         }
       } catch (e) {
         if (mounted) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(content: Text('Error deleting vendor: $e')),
-          );
+          ScaffoldMessenger.of(
+            context,
+          ).showSnackBar(SnackBar(content: Text('Error deleting vendor: $e')));
         }
       }
     }
@@ -117,11 +119,7 @@ class _VendorsScreenState extends ConsumerState<VendorsScreen> {
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  Icon(
-                    Icons.people_outline,
-                    size: 80,
-                    color: Colors.grey[400],
-                  ),
+                  Icon(Icons.people_outline, size: 80, color: Colors.grey[400]),
                   const SizedBox(height: 16),
                   Text(
                     'No vendors yet',
@@ -192,99 +190,182 @@ class _VendorsScreenState extends ConsumerState<VendorsScreen> {
                 itemCount: _filteredVendors.length,
                 itemBuilder: (context, index) {
                   final vendor = _filteredVendors[index];
-                  return Card(
-                    margin: const EdgeInsets.only(bottom: 12),
-                    child: ListTile(
-                      contentPadding: const EdgeInsets.all(16),
-                      leading: CircleAvatar(
-                        backgroundColor: Theme.of(context).colorScheme.primaryContainer,
-                        child: Text(
-                          vendor.name[0].toUpperCase(),
-                          style: TextStyle(
-                            color: Theme.of(context).colorScheme.primary,
-                            fontWeight: FontWeight.bold,
-                          ),
+                  return InkWell(
+                    onTap: () async {
+                      final result = await Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (_) => VendorDetailScreen(vendor: vendor),
                         ),
-                      ),
-                      title: Text(
-                        vendor.name,
-                        style: const TextStyle(fontWeight: FontWeight.bold),
-                      ),
-                      subtitle: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          if (vendor.contactNumber != null) ...[
-                            const SizedBox(height: 4),
+                      );
+                      if (result == true){
+                        _loadVendors(); // Refresh if changes were made
+                      }
+                       
+                    },
+                    child: Card(
+                      margin: const EdgeInsets.only(bottom: 12),
+                      child: Padding(
+                        padding: const EdgeInsets.all(16),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
                             Row(
                               children: [
-                                Icon(Icons.phone, size: 14, color: Colors.grey[600]),
-                                const SizedBox(width: 4),
-                                Text(
-                                  vendor.contactNumber!,
-                                  style: TextStyle(color: Colors.grey[600]),
+                                CircleAvatar(
+                                  backgroundColor: Theme.of(
+                                    context,
+                                  ).colorScheme.primaryContainer,
+                                  child: Text(
+                                    vendor.name[0].toUpperCase(),
+                                    style: TextStyle(
+                                      color: Theme.of(
+                                        context,
+                                      ).colorScheme.primary,
+                                      fontWeight: FontWeight.bold,
+                                    ),
+                                  ),
+                                ),
+                                const SizedBox(width: 16),
+                                Expanded(
+                                  child: Column(
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
+                                    children: [
+                                      Text(
+                                        vendor.name,
+                                        style: const TextStyle(
+                                          fontWeight: FontWeight.bold,
+                                          fontSize: 16,
+                                        ),
+                                      ),
+                                      if (vendor.contactNumber != null) ...[
+                                        const SizedBox(height: 4),
+                                        Row(
+                                          children: [
+                                            Icon(
+                                              Icons.phone,
+                                              size: 14,
+                                              color: Colors.grey[600],
+                                            ),
+                                            const SizedBox(width: 4),
+                                            Text(
+                                              vendor.contactNumber!,
+                                              style: TextStyle(
+                                                color: Colors.grey[600],
+                                              ),
+                                            ),
+                                          ],
+                                        ),
+                                      ],
+                                      if (vendor.vendorType != null) ...[
+                                        const SizedBox(height: 4),
+                                        Container(
+                                          padding: const EdgeInsets.symmetric(
+                                            horizontal: 8,
+                                            vertical: 4,
+                                          ),
+                                          decoration: BoxDecoration(
+                                            color: Colors.blue.shade100,
+                                            borderRadius: BorderRadius.circular(
+                                              8,
+                                            ),
+                                          ),
+                                          child: Text(
+                                            vendor.vendorType!
+                                                .replaceAll('_', ' ')
+                                                .toUpperCase(),
+                                            style: TextStyle(
+                                              fontSize: 11,
+                                              fontWeight: FontWeight.bold,
+                                              color: Colors.blue.shade900,
+                                            ),
+                                          ),
+                                        ),
+                                      ],
+                                    ],
+                                  ),
+                                ),
+                                PopupMenuButton(
+                                  itemBuilder: (context) => [
+                                    const PopupMenuItem(
+                                      value: 'edit',
+                                      child: Row(
+                                        children: [
+                                          Icon(Icons.edit_outlined),
+                                          SizedBox(width: 8),
+                                          Text('Edit'),
+                                        ],
+                                      ),
+                                    ),
+                                    const PopupMenuItem(
+                                      value: 'delete',
+                                      child: Row(
+                                        children: [
+                                          Icon(
+                                            Icons.delete_outline,
+                                            color: Colors.red,
+                                          ),
+                                          SizedBox(width: 8),
+                                          Text(
+                                            'Delete',
+                                            style: TextStyle(color: Colors.red),
+                                          ),
+                                        ],
+                                      ),
+                                    ),
+                                  ],
+                                  onSelected: (value) async {
+                                    if (value == 'edit') {
+                                      final result = await Navigator.push(
+                                        context,
+                                        MaterialPageRoute(
+                                          builder: (_) => AddEditVendorScreen(
+                                            vendor: vendor,
+                                          ),
+                                        ),
+                                      );
+                                      if (result == true) _loadVendors();
+                                    } else if (value == 'delete') {
+                                      _deleteVendor(vendor);
+                                    }
+                                  },
+                                ),
+                              ],
+                            ),
+                            const SizedBox(height: 12),
+                            const Divider(height: 1),
+                            const SizedBox(height: 12),
+                            Row(
+                              children: [
+                                Expanded(
+                                  child: OutlinedButton.icon(
+                                    onPressed: () {
+                                      Navigator.push(
+                                        context,
+                                        MaterialPageRoute(
+                                          builder: (_) => VendorExpensesScreen(
+                                            vendor: vendor,
+                                          ),
+                                        ),
+                                      );
+                                    },
+                                    icon: const Icon(
+                                      Icons.receipt_long,
+                                      size: 18,
+                                    ),
+                                    label: const Text('View Expenses'),
+                                    style: OutlinedButton.styleFrom(
+                                      padding: const EdgeInsets.symmetric(
+                                        vertical: 12,
+                                      ),
+                                    ),
+                                  ),
                                 ),
                               ],
                             ),
                           ],
-                          if (vendor.vendorType != null) ...[
-                            const SizedBox(height: 4),
-                            Container(
-                              padding: const EdgeInsets.symmetric(
-                                horizontal: 8,
-                                vertical: 4,
-                              ),
-                              decoration: BoxDecoration(
-                                color: Colors.blue.shade100,
-                                borderRadius: BorderRadius.circular(8),
-                              ),
-                              child: Text(
-                                vendor.vendorType!.replaceAll('_', ' ').toUpperCase(),
-                                style: TextStyle(
-                                  fontSize: 11,
-                                  fontWeight: FontWeight.bold,
-                                  color: Colors.blue.shade900,
-                                ),
-                              ),
-                            ),
-                          ],
-                        ],
-                      ),
-                      trailing: PopupMenuButton(
-                        itemBuilder: (context) => [
-                          const PopupMenuItem(
-                            value: 'edit',
-                            child: Row(
-                              children: [
-                                Icon(Icons.edit_outlined),
-                                SizedBox(width: 8),
-                                Text('Edit'),
-                              ],
-                            ),
-                          ),
-                          const PopupMenuItem(
-                            value: 'delete',
-                            child: Row(
-                              children: [
-                                Icon(Icons.delete_outline, color: Colors.red),
-                                SizedBox(width: 8),
-                                Text('Delete', style: TextStyle(color: Colors.red)),
-                              ],
-                            ),
-                          ),
-                        ],
-                        onSelected: (value) async {
-                          if (value == 'edit') {
-                            final result = await Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                builder: (_) => AddEditVendorScreen(vendor: vendor),
-                              ),
-                            );
-                            if (result == true) _loadVendors();
-                          } else if (value == 'delete') {
-                            _deleteVendor(vendor);
-                          }
-                        },
+                        ),
                       ),
                     ),
                   );

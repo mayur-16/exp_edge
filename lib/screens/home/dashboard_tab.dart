@@ -31,7 +31,7 @@ class _DashboardTabState extends State<DashboardTab> {
 
     try {
       final org = await AuthService().getUserOrganization();
-      
+
       if (org == null) {
         setState(() {
           _errorMessage = 'Organization not found';
@@ -103,16 +103,16 @@ class _DashboardTabState extends State<DashboardTab> {
         children: [
           Text(
             'Welcome back!',
-            style: Theme.of(context).textTheme.headlineSmall?.copyWith(
-                  fontWeight: FontWeight.bold,
-                ),
+            style: Theme.of(
+              context,
+            ).textTheme.headlineSmall?.copyWith(fontWeight: FontWeight.bold),
           ),
           const SizedBox(height: 8),
           Text(
             _organization!.name,
-            style: Theme.of(context).textTheme.bodyLarge?.copyWith(
-                  color: Colors.grey[600],
-                ),
+            style: Theme.of(
+              context,
+            ).textTheme.bodyLarge?.copyWith(color: Colors.grey[600]),
           ),
           const SizedBox(height: 24),
           Row(
@@ -136,10 +136,46 @@ class _DashboardTabState extends State<DashboardTab> {
               ),
             ],
           ),
+          const SizedBox(height: 24),
+
+          // Top Sites by Expense
+          Card(
+            child: Padding(
+              padding: const EdgeInsets.all(16),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Row(
+                    children: [
+                      Icon(
+                        Icons.location_city,
+                        color: Theme.of(context).colorScheme.primary,
+                      ),
+                      const SizedBox(width: 8),
+                      Text(
+                        'Top Sites by Expense',
+                        style: Theme.of(context).textTheme.titleMedium
+                            ?.copyWith(fontWeight: FontWeight.bold),
+                      ),
+                    ],
+                  ),
+                  const SizedBox(height: 12),
+                  TextButton(
+                    onPressed: () {
+                      // Navigate to sites screen
+                      // This will depend on your navigation structure
+                    },
+                    child: const Text('View all sites →'),
+                  ),
+                ],
+              ),
+            ),
+          ),
           const SizedBox(height: 16),
           DashboardCard(
             title: 'Storage Used',
-            value: '${(_organization!.storageUsed / (1024 * 1024)).toStringAsFixed(1)} MB',
+            value:
+                '${(_organization!.storageUsed / (1024 * 1024)).toStringAsFixed(1)} MB',
             subtitle: 'of ${_organization!.maxStorageMb} MB',
             icon: Icons.cloud_outlined,
             color: Colors.purple,
@@ -160,9 +196,8 @@ class _DashboardTabState extends State<DashboardTab> {
                       const SizedBox(width: 8),
                       Text(
                         'Subscription Status',
-                        style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                              fontWeight: FontWeight.bold,
-                            ),
+                        style: Theme.of(context).textTheme.titleMedium
+                            ?.copyWith(fontWeight: FontWeight.bold),
                       ),
                     ],
                   ),
@@ -194,14 +229,8 @@ class _DashboardTabState extends State<DashboardTab> {
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
-        Text(
-          label,
-          style: TextStyle(color: Colors.grey[600]),
-        ),
-        Text(
-          value,
-          style: const TextStyle(fontWeight: FontWeight.bold),
-        ),
+        Text(label, style: TextStyle(color: Colors.grey[600])),
+        Text(value, style: const TextStyle(fontWeight: FontWeight.bold)),
       ],
     );
   }

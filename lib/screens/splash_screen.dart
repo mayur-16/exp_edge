@@ -1,3 +1,7 @@
+import 'package:exp_edge/screens/auth/biometric_prompt_screen.dart';
+import 'package:exp_edge/screens/auth/invite_registration_screen.dart';
+import '../core/config/supabase_config.dart';
+import 'package:exp_edge/services/biometric_service.dart';
 import 'package:flutter/material.dart';
 import '../services/auth_service.dart';
 import 'auth/login_screen.dart';
@@ -5,6 +9,8 @@ import 'home/home_screen.dart';
 import 'subscription_expired_screen.dart';
 
 class SplashScreen extends StatefulWidget {
+
+
   const SplashScreen({super.key});
 
   @override
@@ -12,17 +18,19 @@ class SplashScreen extends StatefulWidget {
 }
 
 class _SplashScreenState extends State<SplashScreen> {
+
   @override
   void initState() {
     super.initState();
     _checkAuth();
   }
 
-  Future<void> _checkAuth() async {
+    Future<void> _checkAuth() async {
     await Future.delayed(const Duration(seconds: 2));
 
     if (!mounted) return;
 
+    // Normal auth flow
     final authService = AuthService();
     
     if (!authService.isSignedIn) {
@@ -33,7 +41,33 @@ class _SplashScreenState extends State<SplashScreen> {
       return;
     }
 
-    // Check subscription status
+    // User is signed in - check if biometric is enabled
+    final isBiometricEnabled = await BiometricService.isBiometricEnabled();
+    
+    if (isBiometricEnabled) {
+      // Show biometric prompt
+      final authenticated = await BiometricService.authenticate();
+      
+      if (!authenticated) {
+        // Biometric failed - logout and go to login screen
+        await authService.signOut();
+        if (mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(
+              content: Text('Biometric authentication failed'),
+              backgroundColor: Colors.red,
+            ),
+          );
+          Navigator.pushReplacement(
+            context,
+            MaterialPageRoute(builder: (_) => const LoginScreen()),
+          );
+        }
+        return;
+      }
+    }
+
+    // Biometric passed or not enabled - check subscription status
     final org = await authService.getUserOrganization();
     
     if (org == null) {
@@ -59,7 +93,7 @@ class _SplashScreenState extends State<SplashScreen> {
     }
   }
 
-  @override
+ @override
   Widget build(BuildContext context) {
     return Scaffold(
       body: Container(
@@ -94,10 +128,7 @@ class _SplashScreenState extends State<SplashScreen> {
               const SizedBox(height: 8),
               Text(
                 'Construction Expense Tracking',
-                style: TextStyle(
-                  fontSize: 16,
-                  color: Colors.white70,
-                ),
+                style: TextStyle(fontSize: 16, color: Colors.white70),
               ),
               const SizedBox(height: 48),
               CircularProgressIndicator(color: Colors.white),

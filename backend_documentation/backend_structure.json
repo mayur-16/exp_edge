@@ -1,0 +1,31 @@
+{
+  "database": "PostgreSQL",
+  "provider": "Supabase",
+  "version": "1.0.0",
+  "tables": {
+    "organizations": {
+      "purpose": "Multi-tenant root - one per client company",
+      "columns": [
+        {"name": "id", "type": "UUID", "primary_key": true},
+        {"name": "name", "type": "TEXT", "unique": true, "not_null": true},
+        {"name": "email", "type": "TEXT", "unique": true, "not_null": true},
+        {"name": "subscription_status", "type": "TEXT", "default": "trial"},
+        {"name": "trial_end_date", "type": "TIMESTAMP"}
+      ],
+      "relationships": [
+        {"type": "1:N", "with": "users"},
+        {"type": "1:N", "with": "sites"},
+        {"type": "1:N", "with": "expenses"}
+      ]
+    }
+  },
+  "rls_policies": {
+    "organizations": ["Users can view own org"],
+    "expenses": ["Users access own expenses"]
+  },
+  "functions": [
+    "generate_invite_token()",
+    "validate_invite_token(token)",
+    "update_org_stats()"
+  ]
+}

@@ -1,3 +1,4 @@
+import 'package:exp_edge/services/contactus_service.dart';
 import 'package:flutter/material.dart';
 import '../models/organization.dart';
 import '../services/auth_service.dart';
@@ -62,7 +63,7 @@ class SubscriptionExpiredScreen extends StatelessWidget {
               const SizedBox(height: 32),
               ElevatedButton.icon(
                 onPressed: () {
-                  // In real app: Open WhatsApp, phone dialer, or email
+                  ContactusService.openWhatsApp(context: context);
                 },
                 icon: const Icon(Icons.phone),
                 label: const Text('Contact for Renewal'),
@@ -74,19 +75,19 @@ class SubscriptionExpiredScreen extends StatelessWidget {
                 ),
               ),
               const SizedBox(height: 16),
-              TextButton(
-                onPressed: () async {
-                  await AuthService().signOut();
-                  if (context.mounted) {
-                    Navigator.pushAndRemoveUntil(
-                      context,
-                      MaterialPageRoute(builder: (_) => const LoginScreen()),
-                      (route) => false,
-                    );
-                  }
-                },
-                child: const Text('Logout'),
-              ),
+              // TextButton(
+              //   onPressed: () async {
+              //     await AuthService().signOut();
+              //     if (context.mounted) {
+              //       Navigator.pushAndRemoveUntil(
+              //         context,
+              //         MaterialPageRoute(builder: (_) => const LoginScreen()),
+              //         (route) => false,
+              //       );
+              //     }
+              //   },
+              //   child: const Text('Logout'),
+              // ),
             ],
           ),
         ),
