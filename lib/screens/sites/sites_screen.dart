@@ -103,7 +103,7 @@ Future<void> _loadMoreSites() async {
           ),
           ElevatedButton(
             onPressed: () => Navigator.pop(context, true),
-            style: ElevatedButton.styleFrom(backgroundColor: Colors.red),
+            style: ElevatedButton.styleFrom(backgroundColor: Colors.red.shade600,foregroundColor: Colors.white),
             child: const Text('Delete'),
           ),
         ],

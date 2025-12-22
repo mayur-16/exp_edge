@@ -51,7 +51,6 @@ class _DashboardTabState extends State<DashboardTab> {
         _errorMessage = 'Error: $e';
         _isLoading = false;
       });
-      print('Dashboard load error: $e'); // Debug print
     }
   }
 
@@ -95,7 +94,7 @@ class _DashboardTabState extends State<DashboardTab> {
     if (_organization == null) {
       return const Center(child: Text('No organization data'));
     }
-
+print('Storage used: ${_organization!.storageUsed} bytes'); // Debug print
     return RefreshIndicator(
       onRefresh: _loadData,
       child: ListView(
@@ -112,7 +111,7 @@ class _DashboardTabState extends State<DashboardTab> {
             _organization!.name,
             style: Theme.of(
               context,
-            ).textTheme.bodyLarge?.copyWith(color: Colors.grey[600]),
+            ).textTheme.bodyLarge?.copyWith(color: Colors.grey[600],fontSize: 24,fontWeight: FontWeight.w800),
           ),
           const SizedBox(height: 24),
           Row(
@@ -136,42 +135,8 @@ class _DashboardTabState extends State<DashboardTab> {
               ),
             ],
           ),
-          const SizedBox(height: 24),
+          const SizedBox(height: 20),
 
-          // Top Sites by Expense
-          Card(
-            child: Padding(
-              padding: const EdgeInsets.all(16),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Row(
-                    children: [
-                      Icon(
-                        Icons.location_city,
-                        color: Theme.of(context).colorScheme.primary,
-                      ),
-                      const SizedBox(width: 8),
-                      Text(
-                        'Top Sites by Expense',
-                        style: Theme.of(context).textTheme.titleMedium
-                            ?.copyWith(fontWeight: FontWeight.bold),
-                      ),
-                    ],
-                  ),
-                  const SizedBox(height: 12),
-                  TextButton(
-                    onPressed: () {
-                      // Navigate to sites screen
-                      // This will depend on your navigation structure
-                    },
-                    child: const Text('View all sites →'),
-                  ),
-                ],
-              ),
-            ),
-          ),
-          const SizedBox(height: 16),
           DashboardCard(
             title: 'Storage Used',
             value:
@@ -180,7 +145,7 @@ class _DashboardTabState extends State<DashboardTab> {
             icon: Icons.cloud_outlined,
             color: Colors.purple,
           ),
-          const SizedBox(height: 24),
+          const SizedBox(height: 20),
           Card(
             child: Padding(
               padding: const EdgeInsets.all(16),

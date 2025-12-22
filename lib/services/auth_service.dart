@@ -155,6 +155,52 @@ class AuthService {
         .eq('id', user.organizationId)
         .single();
 
-    return Organization.fromJson(response);
+    final org = Organization.fromJson(response);
+    
+    // ✨ AUTO-UPDATE expired subscriptions
+    await _checkAndUpdateSubscriptionStatus(org);
+
+    return org;
   }
+
+
+    /// Auto-update subscription status if expired
+  /// This runs every time user opens the app
+  Future<void> _checkAndUpdateSubscriptionStatus(Organization org) async {
+    // Skip if already marked as expired
+    if (org.subscriptionStatus == 'expired') return;
+
+    final now = DateTime.now();
+    bool needsUpdate = false;
+
+    // Check trial expiration
+    if (org.subscriptionStatus == 'trial' && 
+        org.trialEndDate != null && 
+        now.isAfter(org.trialEndDate!)) {
+      needsUpdate = true;
+    }
+
+    // Check active subscription expiration
+    if (org.subscriptionStatus == 'active' && 
+        org.subscriptionEndDate != null && 
+        now.isAfter(org.subscriptionEndDate!)) {
+      needsUpdate = true;
+    }
+
+    // Update database if expired
+    if (needsUpdate) {
+      try {
+        await _supabase
+            .from('organizations')
+            .update({'subscription_status': 'expired'})
+            .eq('id', org.id);
+        
+        print('✅ Auto-updated organization ${org.id} status to expired');
+      } catch (e) {
+        print('⚠️ Failed to update subscription status: $e');
+        // Don't throw - app still works with org.isExpired calculation
+      }
+    }
+  }
+  
 }

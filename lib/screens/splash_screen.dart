@@ -72,17 +72,17 @@ class _SplashScreenState extends State<SplashScreen> {
       return;
     }
 
-    if (org.isExpired) {
+    if (org.canAccess) {
+      Navigator.pushReplacement(
+        context,
+        MaterialPageRoute(builder: (_) => const HomeScreen()),
+      );
+    } else {
       Navigator.pushReplacement(
         context,
         MaterialPageRoute(
           builder: (_) => SubscriptionExpiredScreen(organization: org),
         ),
-      );
-    } else {
-      Navigator.pushReplacement(
-        context,
-        MaterialPageRoute(builder: (_) => const HomeScreen()),
       );
     }
   }

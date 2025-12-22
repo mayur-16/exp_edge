@@ -26,7 +26,7 @@ class ExpenseService {
     // Build query
     var query = _supabase
         .from('expenses')
-        .select('*, sites(name), vendors(name)')
+        .select('*, sites(name), vendors(name) , creator:created_by(full_name)')
         .eq('organization_id', user.organizationId);
 
     // Filter by site if provided
@@ -72,17 +72,22 @@ class ExpenseService {
   }
 
   Future<Expense> createExpense(Expense expense) async {
+      final user = await ref.read(authServiceProvider).getCurrentUser();
+    if (user == null) throw Exception('User not authenticated');
     final response = await _supabase
         .from('expenses')
-        .insert(expense.toJson())
-        .select('*, sites(name), vendors(name)')
+        .insert({ ...expense.toJson(), 
+        'created_by': user.id, })
+        .select('*, sites(name), vendors(name) , creator:created_by(full_name)')
         .single();
 
     return Expense.fromJson(response);
   }
 
   Future<void> updateExpense(String id, Map<String, dynamic> updates) async {
-    await _supabase.from('expenses').update(updates).eq('id', id);
+          final user = await ref.read(authServiceProvider).getCurrentUser();
+    if (user == null) throw Exception('User not authenticated');
+    await _supabase.from('expenses').update({...updates , 'created_by': user.id}).eq('id', id);
   }
 
   Future<void> deleteExpense(String id) async {

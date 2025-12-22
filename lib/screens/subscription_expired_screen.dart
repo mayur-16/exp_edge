@@ -1,8 +1,6 @@
 import 'package:exp_edge/services/contactus_service.dart';
 import 'package:flutter/material.dart';
 import '../models/organization.dart';
-import '../services/auth_service.dart';
-import 'auth/login_screen.dart';
 
 class SubscriptionExpiredScreen extends StatelessWidget {
   final Organization organization;

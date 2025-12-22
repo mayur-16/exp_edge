@@ -9,10 +9,12 @@ class Expense {
   final DateTime expenseDate;
   final String? receiptUrl;
   final DateTime createdAt;
-  
+  final String? createdBy;
+
   // Additional fields for display
   String? siteName;
   String? vendorName;
+  String? createdByName;
 
   Expense({
     required this.id,
@@ -24,9 +26,11 @@ class Expense {
     required this.category,
     required this.expenseDate,
     this.receiptUrl,
+    this.createdBy,
     required this.createdAt,
     this.siteName,
     this.vendorName,
+    this.createdByName,
   });
 
   factory Expense.fromJson(Map<String, dynamic> json) {
@@ -40,9 +44,12 @@ class Expense {
       category: json['category'],
       expenseDate: DateTime.parse(json['expense_date']),
       receiptUrl: json['receipt_url'],
+      createdBy: json['created_by'],
       createdAt: DateTime.parse(json['created_at']),
       siteName: json['sites']?['name'],
       vendorName: json['vendors']?['name'],
+      // Handle both nested object and direct field
+      createdByName: json['creator']?['full_name'] ?? json['creator_name'],
     );
   }
 

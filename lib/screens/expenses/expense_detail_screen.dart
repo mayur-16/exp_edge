@@ -38,7 +38,7 @@ class ExpenseDetailScreen extends ConsumerWidget {
       body: ListView(
         padding: const EdgeInsets.all(16),
         children: [
-          // Amount Card (Prominent)
+          // Amount Card
           Card(
             color: Theme.of(context).colorScheme.primaryContainer,
             child: Padding(
@@ -110,7 +110,6 @@ class ExpenseDetailScreen extends ConsumerWidget {
                   ),
                   const SizedBox(height: 16),
 
-                  // Description
                   _buildInfoRow(
                     icon: Icons.description,
                     label: 'Description',
@@ -118,7 +117,6 @@ class ExpenseDetailScreen extends ConsumerWidget {
                   ),
                   const Divider(height: 24),
 
-                  // Site
                   _buildInfoRow(
                     icon: Icons.location_city,
                     label: 'Site',
@@ -126,7 +124,6 @@ class ExpenseDetailScreen extends ConsumerWidget {
                   ),
                   const Divider(height: 24),
 
-                  // Vendor
                   _buildInfoRow(
                     icon: Icons.person,
                     label: 'Vendor',
@@ -134,7 +131,6 @@ class ExpenseDetailScreen extends ConsumerWidget {
                   ),
                   const Divider(height: 24),
 
-                  // Date
                   _buildInfoRow(
                     icon: Icons.calendar_today,
                     label: 'Expense Date',
@@ -142,7 +138,14 @@ class ExpenseDetailScreen extends ConsumerWidget {
                   ),
                   const Divider(height: 24),
 
-                  // Created
+                  // Added By - Now displayed directly from loaded data
+                  _buildInfoRow(
+                    icon: Icons.person_add,
+                    label: 'Added By',
+                    value: expense.createdByName ?? 'Unknown',
+                  ),
+                  const Divider(height: 24),
+
                   _buildInfoRow(
                     icon: Icons.access_time,
                     label: 'Created On',
@@ -158,68 +161,63 @@ class ExpenseDetailScreen extends ConsumerWidget {
           // Receipt Card
           if (expense.receiptUrl != null) ...[
             Card(
-              child: Column(
-                children: [
-                  ListTile(
-                    leading: Icon(
-                      Icons.attach_file,
-                      color: Theme.of(context).colorScheme.primary,
-                    ),
-                    title: const Text('Receipt Attached'),
-                    subtitle: const Text('Tap to view receipt'),
-                    trailing: const Icon(Icons.chevron_right),
-                    onTap: () {
-                      // Show receipt image in dialog
-                      showDialog(
-                        context: context,
-                        builder: (context) => Dialog(
-                          child: Column(
-                            mainAxisSize: MainAxisSize.min,
-                            children: [
-                              AppBar(
-                                title: const Text('Receipt'),
-                                automaticallyImplyLeading: false,
-                                actions: [
-                                  IconButton(
-                                    icon: const Icon(Icons.close),
-                                    onPressed: () => Navigator.pop(context),
-                                  ),
-                                ],
-                              ),
-                              Flexible(
-                                child: InteractiveViewer(
-                                  child: Image.network(
-                                    expense.receiptUrl!,
-                                    fit: BoxFit.contain,
-                                    loadingBuilder: (context, child, progress) {
-                                      if (progress == null) return child;
-                                      return const Center(
-                                        child: CircularProgressIndicator(),
-                                      );
-                                    },
-                                    errorBuilder: (context, error, stack) {
-                                      return const Padding(
-                                        padding: EdgeInsets.all(32),
-                                        child: Column(
-                                          mainAxisSize: MainAxisSize.min,
-                                          children: [
-                                            Icon(Icons.error_outline, size: 48),
-                                            SizedBox(height: 16),
-                                            Text('Could not load receipt'),
-                                          ],
-                                        ),
-                                      );
-                                    },
-                                  ),
-                                ),
+              child: ListTile(
+                leading: Icon(
+                  Icons.attach_file,
+                  color: Theme.of(context).colorScheme.primary,
+                ),
+                title: const Text('Receipt Attached'),
+                subtitle: const Text('Tap to view receipt'),
+                trailing: const Icon(Icons.chevron_right),
+                onTap: () {
+                  showDialog(
+                    context: context,
+                    builder: (context) => Dialog(
+                      child: Column(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          AppBar(
+                            title: const Text('Receipt'),
+                            automaticallyImplyLeading: false,
+                            actions: [
+                              IconButton(
+                                icon: const Icon(Icons.close),
+                                onPressed: () => Navigator.pop(context),
                               ),
                             ],
                           ),
-                        ),
-                      );
-                    },
-                  ),
-                ],
+                          Flexible(
+                            child: InteractiveViewer(
+                              child: Image.network(
+                                expense.receiptUrl!,
+                                fit: BoxFit.contain,
+                                loadingBuilder: (context, child, progress) {
+                                  if (progress == null) return child;
+                                  return const Center(
+                                    child: CircularProgressIndicator(),
+                                  );
+                                },
+                                errorBuilder: (context, error, stack) {
+                                  return const Padding(
+                                    padding: EdgeInsets.all(32),
+                                    child: Column(
+                                      mainAxisSize: MainAxisSize.min,
+                                      children: [
+                                        Icon(Icons.error_outline, size: 48),
+                                        SizedBox(height: 16),
+                                        Text('Could not load receipt'),
+                                      ],
+                                    ),
+                                  );
+                                },
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  );
+                },
               ),
             ),
             const SizedBox(height: 16),
@@ -272,7 +270,7 @@ class ExpenseDetailScreen extends ConsumerWidget {
                           ElevatedButton(
                             onPressed: () => Navigator.pop(context, true),
                             style: ElevatedButton.styleFrom(
-                              backgroundColor: Colors.red,
+                              backgroundColor: Colors.red.shade600,foregroundColor: Colors.white,
                             ),
                             child: const Text('Delete'),
                           ),
@@ -295,9 +293,9 @@ class ExpenseDetailScreen extends ConsumerWidget {
                         }
                       } catch (e) {
                         if (context.mounted) {
-                          ScaffoldMessenger.of(
-                            context,
-                          ).showSnackBar(SnackBar(content: Text('Error: $e')));
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            SnackBar(content: Text('Error: $e')),
+                          );
                         }
                       }
                     }

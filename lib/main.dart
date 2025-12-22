@@ -1,4 +1,3 @@
-
 import 'package:exp_edge/screens/auth/invite_registration_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -30,7 +29,6 @@ class _ExpEdgeAppState extends State<ExpEdgeApp> {
   @override
   void initState() {
     super.initState();
-    _appLinks = AppLinks();  // Initialize the instance
     _initDeepLinks();
   }
 
@@ -41,32 +39,78 @@ class _ExpEdgeAppState extends State<ExpEdgeApp> {
   }
 
   Future<void> _initDeepLinks() async {
-    // Handle link that opened the app (initial link)
-    final initialUri = await _appLinks.getInitialLink();
-    if (initialUri != null) {
-      _handleDeepLink(initialUri);
+    _appLinks = AppLinks();
+
+    // Handle link that opened the app (cold start)
+    try {
+      final initialUri = await _appLinks.getInitialLink();
+      if (initialUri != null) {
+        print('📱 Initial deep link: $initialUri');
+        // Delay to ensure navigation is ready
+        Future.delayed(const Duration(milliseconds: 500), () {
+          _handleDeepLink(initialUri);
+        });
+      }
+    } catch (e) {
+      print('❌ Error getting initial link: $e');
     }
 
-    // Handle incoming links while app is running
-    _linkSubscription = _appLinks.uriLinkStream.listen((uri) {
-      _handleDeepLink(uri);
-        });
+    // Handle incoming links while app is running (warm start)
+    _linkSubscription = _appLinks.uriLinkStream.listen(
+      (uri) {
+        print('📱 Incoming deep link: $uri');
+        _handleDeepLink(uri);
+      },
+      onError: (err) {
+        print('❌ Deep link stream error: $err');
+      },
+    );
   }
 
   void _handleDeepLink(Uri uri) {
-    // Only handle HTTPS App Links
+    print('🔗 Processing deep link: $uri');
+    print('   Scheme: ${uri.scheme}');
+    print('   Host: ${uri.host}');
+    print('   Path: ${uri.path}');
+    print('   Segments: ${uri.pathSegments}');
+
+    // Check if it's an invite link
     if (uri.scheme == 'https' &&
         uri.host == 'expedge.mangaloredrives.in' &&
-        uri.path.startsWith('/invite/')) {
+        uri.pathSegments.isNotEmpty &&
+        uri.pathSegments[0] == 'invite') {
       
-      // Extract token from /invite/TOKEN
+      // Extract token
       if (uri.pathSegments.length >= 2) {
         final token = uri.pathSegments[1];
+        print('✅ Extracted token: $token');
         
-        // Navigate to invite registration screen
-        _navigatorKey.currentState?.pushNamed('/invite', arguments: token);
+        // Navigate to invite registration
+        _navigateToInvite(token);
+      } else {
+        print('❌ Invalid invite link format - no token found');
       }
+    } else {
+      print('❌ Not a valid invite link');
     }
+  }
+
+  void _navigateToInvite(String token) {
+    // Use post frame callback to ensure context is ready
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (_navigatorKey.currentState != null) {
+        print('🚀 Navigating to invite screen with token: $token');
+        
+        // Push the invite screen
+        _navigatorKey.currentState!.push(
+          MaterialPageRoute(
+            builder: (_) => InviteRegistrationScreen(token: token),
+          ),
+        );
+      } else {
+        print('❌ Navigator not ready yet');
+      }
+    });
   }
 
   @override
@@ -84,12 +128,7 @@ class _ExpEdgeAppState extends State<ExpEdgeApp> {
         useMaterial3: true,
       ),
       home: const SplashScreen(),
-      // Make sure you have this route defined somewhere
-      routes: {
-        '/invite': (context) => InviteRegistrationScreen(
-              token: ModalRoute.of(context)!.settings.arguments as String,
-            ),
-      },
+      // Remove the named routes - using programmatic navigation instead
     );
   }
 }
