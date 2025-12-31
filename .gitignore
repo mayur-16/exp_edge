@@ -45,6 +45,8 @@ app.*.map.json
 /android/app/release
 
 
+/macos/
+
 # API Keys and Secrets
 .env
 .env.*
