@@ -2,7 +2,7 @@ import 'package:exp_edge/services/biometric_service.dart';
 import 'package:flutter/material.dart';
 import '../services/auth_service.dart';
 import 'auth/login_screen.dart';
-import 'home/home_screen.dart';
+import 'home/adaptive_home_screen.dart';
 import 'subscription_expired_screen.dart';
 
 class SplashScreen extends StatefulWidget {
@@ -75,7 +75,7 @@ class _SplashScreenState extends State<SplashScreen> {
     if (org.canAccess) {
       Navigator.pushReplacement(
         context,
-        MaterialPageRoute(builder: (_) => const HomeScreen()),
+        MaterialPageRoute(builder: (_) => const AdaptiveHomeScreen()),
       );
     } else {
       Navigator.pushReplacement(

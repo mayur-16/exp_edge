@@ -1,3 +1,4 @@
+import 'package:exp_edge/screens/home/adaptive_home_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import '../../services/auth_service.dart';
@@ -62,7 +63,7 @@ class _LoginScreenState extends State<LoginScreen> {
       TextInput.finishAutofillContext(shouldSave: true);
       Navigator.pushReplacement(
         context,
-        MaterialPageRoute(builder: (_) => const HomeScreen()),
+        MaterialPageRoute(builder: (_) => const AdaptiveHomeScreen()),
       );
     } else {
       TextInput.finishAutofillContext(shouldSave: false);

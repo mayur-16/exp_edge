@@ -1,3 +1,4 @@
+import 'package:exp_edge/screens/home/adaptive_home_screen.dart';
 import 'package:flutter/material.dart';
 import '../../services/biometric_service.dart';
 import '../../services/auth_service.dart';
@@ -33,7 +34,7 @@ class _BiometricPromptScreenState extends State<BiometricPromptScreen> {
     if (authenticated) {
       Navigator.pushReplacement(
         context,
-        MaterialPageRoute(builder: (_) => const HomeScreen()),
+        MaterialPageRoute(builder: (_) => const AdaptiveHomeScreen()),
       );
     } else {
       setState(() => _isAuthenticating = false);

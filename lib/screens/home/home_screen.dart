@@ -1,9 +1,9 @@
+import 'package:exp_edge/screens/expenses/adaptive_expenses_screen.dart';
 import 'package:flutter/material.dart';
 import '../../services/auth_service.dart';
 import '../../models/organization.dart';
 import '../sites/sites_screen.dart';
 import '../vendors/vendors_screen.dart';
-import '../expenses/expenses_screen.dart';
 import '../profile/profile_screen.dart';
 import 'widgets/subscription_warning_dialog.dart';
 import 'dashboard_tab.dart';
@@ -49,7 +49,7 @@ class _HomeScreenState extends State<HomeScreen> {
 
   final List<Widget> _screens = [
     const SitesScreen(),
-    const ExpensesScreen(),
+    const AdaptiveExpensesScreen(),
     const VendorsScreen(),
     const DashboardTab(),
   ];

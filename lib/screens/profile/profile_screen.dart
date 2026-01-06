@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:exp_edge/services/biometric_service.dart';
 import 'package:exp_edge/services/contactus_service.dart';
 import 'package:exp_edge/services/expense_service.dart';
@@ -289,6 +291,7 @@ Future<void> _logout() async {
             const SizedBox(height: 16),
 
             // Biometric Settings Card
+            if (Platform.isAndroid || Platform.isIOS)
             FutureBuilder<bool>(
               future: BiometricService.canUseBiometrics(),
               builder: (context, snapshot) {

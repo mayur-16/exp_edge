@@ -1,3 +1,4 @@
+import 'package:exp_edge/screens/home/adaptive_home_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../services/auth_service.dart';
@@ -94,7 +95,7 @@ class _InviteRegistrationScreenState extends ConsumerState<InviteRegistrationScr
 
           Navigator.pushAndRemoveUntil(
             context,
-            MaterialPageRoute(builder: (_) => const HomeScreen()),
+            MaterialPageRoute(builder: (_) => const AdaptiveHomeScreen()),
             (route) => false,
           );
         } else {
