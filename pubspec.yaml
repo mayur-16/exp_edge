@@ -73,9 +73,20 @@ dev_dependencies:
   # rules and activating additional ones.
   flutter_lints: ^6.0.0
   flutter_launcher_icons: ^0.14.1
+  msix: ^3.16.12
 
-# For information on the generic Dart part of this file, see the
-# following page: https://dart.dev/tools/pub/pubspec
+
+
+msix_config:
+  display_name: ExpEdge
+  publisher_display_name: Tequra Solutions
+  identity_name: com.expedge.app
+  msix_version: 1.0.0.0
+  logo_path: assets/icon/wallet.png
+  capabilities: internetClient
+  architecture: x64
+
+
 flutter_launcher_icons:
   android: "launcher_icon"
   ios: true
