@@ -97,8 +97,11 @@ class _LoginScreenState extends State<LoginScreen> {
     return 'Network error. Please check your internet connection.';
   }
   
+  //print('Unhandled login error: $backendError');
   // Default: Show original error
-  return 'Login failed. Please try again.';
+  // temperary : remove print statement
+  return backendError;
+  //return 'Login failed. Please try again.';
 }
 
   @override

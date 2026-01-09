@@ -7,7 +7,9 @@ class SupabaseConfig {
   
   static Future<void> initialize() async {
     await dotenv.load(fileName: ".env");
-    
+    print("Dotenv loaded!");
+    print("SUPABASE_URL: ${dotenv.env['SUPABASE_URL']}");
+    print("SUPABASE_ANON_KEY: ${dotenv.env['SUPABASE_ANON_KEY']?.substring(0, 10)}...");
     await Supabase.initialize(
       url: supabaseUrl,
       anonKey: supabaseAnonKey,

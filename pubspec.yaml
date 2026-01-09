@@ -81,9 +81,13 @@ msix_config:
   display_name: ExpEdge
   publisher_display_name: Tequra Solutions
   identity_name: com.expedge.app
+  publisher: CN=Tequra Solutions 
   msix_version: 1.0.0.0
   logo_path: assets/icon/wallet.png
-  capabilities: internetClient, internetClientServer, privateNetworkClientServer
+  capabilities: 
+    - internetClient
+    - internetClientServer
+    - privateNetworkClientServer
   architecture: x64
   install_certificate: false
 

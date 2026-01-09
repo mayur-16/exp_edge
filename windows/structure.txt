@@ -1,0 +1,40 @@
+.
+├── .gitignore
+├── CMakeLists.txt
+├── flutter
+│   ├── CMakeLists.txt
+│   ├── ephemeral
+│   │   └── .plugin_symlinks
+│   │       ├── app_links -> /Users/mayuracharya/.pub-cache/hosted/pub.dev/app_links-6.4.1/
+│   │       ├── connectivity_plus -> /Users/mayuracharya/.pub-cache/hosted/pub.dev/connectivity_plus-7.0.0/
+│   │       ├── file_selector_windows -> /Users/mayuracharya/.pub-cache/hosted/pub.dev/file_selector_windows-0.9.3+5/
+│   │       ├── flutter_secure_storage_windows -> /Users/mayuracharya/.pub-cache/hosted/pub.dev/flutter_secure_storage_windows-3.1.2/
+│   │       ├── image_picker_windows -> /Users/mayuracharya/.pub-cache/hosted/pub.dev/image_picker_windows-0.2.2/
+│   │       ├── local_auth_windows -> /Users/mayuracharya/.pub-cache/hosted/pub.dev/local_auth_windows-2.0.1/
+│   │       ├── path_provider_windows -> /Users/mayuracharya/.pub-cache/hosted/pub.dev/path_provider_windows-2.3.0/
+│   │       ├── share_plus -> /Users/mayuracharya/.pub-cache/hosted/pub.dev/share_plus-12.0.1/
+│   │       ├── shared_preferences_windows -> /Users/mayuracharya/.pub-cache/hosted/pub.dev/shared_preferences_windows-2.4.1/
+│   │       └── url_launcher_windows -> /Users/mayuracharya/.pub-cache/hosted/pub.dev/url_launcher_windows-3.1.5/
+│   ├── generated_plugin_registrant.cc
+│   ├── generated_plugin_registrant.h
+│   └── generated_plugins.cmake
+├── packaging
+│   └── msix
+│       └── AppxManifest.xml
+├── runner
+│   ├── CMakeLists.txt
+│   ├── Runner.rc
+│   ├── flutter_window.cpp
+│   ├── flutter_window.h
+│   ├── main.cpp
+│   ├── resource.h
+│   ├── resources
+│   │   └── app_icon.ico
+│   ├── runner.exe.manifest
+│   ├── utils.cpp
+│   ├── utils.h
+│   ├── win32_window.cpp
+│   └── win32_window.h
+└── structure.txt
+
+18 directories, 20 files

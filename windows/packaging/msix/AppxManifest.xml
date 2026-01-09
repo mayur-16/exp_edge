@@ -4,7 +4,7 @@
          xmlns:uap="http://schemas.microsoft.com/appx/manifest/uap/windows10"
          IgnorableNamespaces="uap mp">
 
-  <Identity Name="com.example.exp_edge"
+  <Identity Name="com.expedge.app"
             Publisher="CN=TequraSolutions"
             Version="1.0.0.0" />
 
