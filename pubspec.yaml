@@ -83,7 +83,7 @@ msix_config:
   identity_name: com.expedge.app
   msix_version: 1.0.0.0
   logo_path: assets/icon/wallet.png
-  capabilities: internetClient
+  capabilities: internetClient, internetClientServer, privateNetworkClientServer
   architecture: x64
   install_certificate: false
 
