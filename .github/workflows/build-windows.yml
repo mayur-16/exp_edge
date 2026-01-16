@@ -27,10 +27,40 @@ jobs:
       - name: Install dependencies
         run: flutter pub get
 
+      # CRITICAL FIX: Create .env file with proper formatting
       - name: Setup environment file
+        shell: pwsh
         run: |
-          echo "SUPABASE_URL=${{ secrets.SUPABASE_URL }}" > .env
-          echo "SUPABASE_ANON_KEY=${{ secrets.SUPABASE_ANON_KEY }}" >> .env
+          Write-Host "Creating .env file..." -ForegroundColor Yellow
+          @"
+          SUPABASE_URL=${{ secrets.SUPABASE_URL }}
+          SUPABASE_ANON_KEY=${{ secrets.SUPABASE_ANON_KEY }}
+          "@ | Out-File -FilePath .env -Encoding UTF8 -NoNewline
+          
+          Write-Host "Verifying .env file..." -ForegroundColor Yellow
+          if (Test-Path .env) {
+            Write-Host "✅ .env file created successfully" -ForegroundColor Green
+            Write-Host "File size: $((Get-Item .env).Length) bytes" -ForegroundColor Cyan
+            
+            # Verify content (without exposing secrets)
+            $content = Get-Content .env
+            if ($content -match "SUPABASE_URL=") {
+              Write-Host "✅ SUPABASE_URL found" -ForegroundColor Green
+            } else {
+              Write-Host "❌ SUPABASE_URL missing!" -ForegroundColor Red
+              exit 1
+            }
+            
+            if ($content -match "SUPABASE_ANON_KEY=") {
+              Write-Host "✅ SUPABASE_ANON_KEY found" -ForegroundColor Green
+            } else {
+              Write-Host "❌ SUPABASE_ANON_KEY missing!" -ForegroundColor Red
+              exit 1
+            }
+          } else {
+            Write-Host "❌ Failed to create .env file!" -ForegroundColor Red
+            exit 1
+          }
 
       - name: Enable Windows desktop
         run: flutter config --enable-windows-desktop
@@ -38,10 +68,52 @@ jobs:
       - name: Build Windows app
         run: flutter build windows --release
 
-      - name: Create MSIX package
+      # CRITICAL FIX: Copy .env to build output
+      - name: Copy .env to build output
+        shell: pwsh
         run: |
-          flutter pub run msix:create --install-certificate false
-        continue-on-error: false
+          Write-Host "Copying .env to build output..." -ForegroundColor Yellow
+          
+          $source = ".env"
+          $dest = "build\windows\x64\runner\Release\data\flutter_assets\.env"
+          
+          # Ensure directory exists
+          $destDir = Split-Path -Parent $dest
+          if (-Not (Test-Path $destDir)) {
+            New-Item -ItemType Directory -Path $destDir -Force | Out-Null
+            Write-Host "Created directory: $destDir" -ForegroundColor Cyan
+          }
+          
+          # Copy file
+          Copy-Item $source $dest -Force
+          
+          # Verify copy
+          if (Test-Path $dest) {
+            Write-Host "✅ .env copied successfully to build output" -ForegroundColor Green
+            Write-Host "Destination: $dest" -ForegroundColor Cyan
+            Write-Host "File size: $((Get-Item $dest).Length) bytes" -ForegroundColor Cyan
+          } else {
+            Write-Host "❌ Failed to copy .env to build output!" -ForegroundColor Red
+            exit 1
+          }
+
+      # CRITICAL FIX: Create MSIX without rebuilding (--build-windows false)
+      - name: Create MSIX package
+        shell: pwsh
+        run: |
+          Write-Host "Creating MSIX package..." -ForegroundColor Yellow
+          flutter pub run msix:create --build-windows false --install-certificate false
+          
+          # Verify MSIX was created
+          $msixPath = "build\windows\x64\runner\Release\exp_edge.msix"
+          if (Test-Path $msixPath) {
+            Write-Host "✅ MSIX package created successfully" -ForegroundColor Green
+            Write-Host "Location: $msixPath" -ForegroundColor Cyan
+            Write-Host "Size: $([math]::Round((Get-Item $msixPath).Length / 1MB, 2)) MB" -ForegroundColor Cyan
+          } else {
+            Write-Host "❌ MSIX package not found!" -ForegroundColor Red
+            exit 1
+          }
 
       - name: Get version from pubspec.yaml
         id: version
@@ -49,6 +121,7 @@ jobs:
         run: |
           $version = (Select-String -Path pubspec.yaml -Pattern "version: (.+)" | ForEach-Object { $_.Matches.Groups[1].Value })
           echo "VERSION=$version" >> $env:GITHUB_OUTPUT
+          Write-Host "Version: $version" -ForegroundColor Cyan
 
       - name: Create Release
         id: create_release
@@ -86,3 +159,18 @@ jobs:
           name: windows-build
           path: build/windows/x64/runner/Release/
           if-no-files-found: error
+
+      # BONUS: Upload .env verification log
+      - name: Verify .env in final MSIX
+        if: always()
+        shell: pwsh
+        run: |
+          Write-Host "Final verification..." -ForegroundColor Yellow
+          $envInBuild = "build\windows\x64\runner\Release\data\flutter_assets\.env"
+          if (Test-Path $envInBuild) {
+            Write-Host "✅ .env exists in final build" -ForegroundColor Green
+            $content = Get-Content $envInBuild
+            Write-Host "Lines in .env: $($content.Count)" -ForegroundColor Cyan
+          } else {
+            Write-Host "⚠️ .env NOT found in final build!" -ForegroundColor Yellow
+          }

@@ -1,7 +1,7 @@
 name: exp_edge
 description: Construction expense tracking app
 publish_to: 'none'
-version: 1.0.0+1
+version: 1.0.0+3
 
 environment:
   sdk: ^3.9.2
@@ -84,10 +84,7 @@ msix_config:
   publisher: CN=Tequra Solutions 
   msix_version: 1.0.0.0
   logo_path: assets/icon/wallet.png
-  capabilities: 
-    - internetClient
-    - internetClientServer
-    - privateNetworkClientServer
+  capabilities: internetClient,internetClientServer,privateNetworkClientServer
   architecture: x64
   install_certificate: false
 
