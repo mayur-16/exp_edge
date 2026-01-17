@@ -2,7 +2,8 @@
 <Package xmlns="http://schemas.microsoft.com/appx/manifest/foundation/windows10"
          xmlns:mp="http://schemas.microsoft.com/appx/2014/phone/manifest"
          xmlns:uap="http://schemas.microsoft.com/appx/manifest/uap/windows10"
-         IgnorableNamespaces="uap mp">
+         xmlns:uap3="http://schemas.microsoft.com/appx/manifest/uap/windows10/3"
+         IgnorableNamespaces="uap mp uap3">
 
   <Identity Name="com.expedge.app"
             Publisher="CN=TequraSolutions"
@@ -30,6 +31,15 @@
                           Square150x150Logo="Assets\Square150x150Logo.png"
                           Square44x44Logo="Assets\Square44x44Logo.png">
       </uap:VisualElements>
+      
+      <!-- Deep Link Protocol Registration -->
+      <Extensions>
+        <uap3:Extension Category="windows.appUriHandler">
+          <uap3:AppUriHandler>
+            <uap3:Host Name="expedge.mangaloredrives.in" />
+          </uap3:AppUriHandler>
+        </uap3:Extension>
+      </Extensions>
     </Application>
   </Applications>
 

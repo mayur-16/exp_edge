@@ -4,6 +4,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:app_links/app_links.dart';
 import 'dart:async';
+import 'dart:io' show Platform;
 import 'core/config/supabase_config.dart';
 import 'screens/splash_screen.dart';
 
@@ -45,34 +46,38 @@ class _ExpEdgeAppState extends State<ExpEdgeApp> {
     try {
       final initialUri = await _appLinks.getInitialLink();
       if (initialUri != null) {
-        print('📱 Initial deep link: $initialUri');
-        // Delay to ensure navigation is ready
-        Future.delayed(const Duration(milliseconds: 500), () {
+        debugPrint('📱 Initial deep link: $initialUri');
+        // Windows needs more time to initialize the window
+        final delay = Platform.isWindows 
+            ? const Duration(milliseconds: 2000) 
+            : const Duration(milliseconds: 500);
+        
+        Future.delayed(delay, () {
           _handleDeepLink(initialUri);
         });
       }
     } catch (e) {
-      print('❌ Error getting initial link: $e');
+      debugPrint('❌ Error getting initial link: $e');
     }
 
     // Handle incoming links while app is running (warm start)
     _linkSubscription = _appLinks.uriLinkStream.listen(
       (uri) {
-        print('📱 Incoming deep link: $uri');
+        debugPrint('📱 Incoming deep link: $uri');
         _handleDeepLink(uri);
       },
       onError: (err) {
-        print('❌ Deep link stream error: $err');
+        debugPrint('❌ Deep link stream error: $err');
       },
     );
   }
 
   void _handleDeepLink(Uri uri) {
-    print('🔗 Processing deep link: $uri');
-    print('   Scheme: ${uri.scheme}');
-    print('   Host: ${uri.host}');
-    print('   Path: ${uri.path}');
-    print('   Segments: ${uri.pathSegments}');
+    debugPrint('🔗 Processing deep link: $uri');
+    debugPrint('   Scheme: ${uri.scheme}');
+    debugPrint('   Host: ${uri.host}');
+    debugPrint('   Path: ${uri.path}');
+    debugPrint('   Segments: ${uri.pathSegments}');
 
     // Check if it's an invite link
     if (uri.scheme == 'https' &&
@@ -83,15 +88,16 @@ class _ExpEdgeAppState extends State<ExpEdgeApp> {
       // Extract token
       if (uri.pathSegments.length >= 2) {
         final token = uri.pathSegments[1];
-        print('✅ Extracted token: $token');
+        debugPrint('✅ Extracted token: $token');
         
         // Navigate to invite registration
         _navigateToInvite(token);
       } else {
-        print('❌ Invalid invite link format - no token found');
+        debugPrint('❌ Invalid invite link format - no token found');
       }
     } else {
-      print('❌ Not a valid invite link');
+      debugPrint('❌ Not a valid invite link');
+      debugPrint('   Expected: https://expedge.mangaloredrives.in/invite/{token}');
     }
   }
 
@@ -99,7 +105,7 @@ class _ExpEdgeAppState extends State<ExpEdgeApp> {
     // Use post frame callback to ensure context is ready
     WidgetsBinding.instance.addPostFrameCallback((_) {
       if (_navigatorKey.currentState != null) {
-        print('🚀 Navigating to invite screen with token: $token');
+        debugPrint('🚀 Navigating to invite screen with token: $token');
         
         // Push the invite screen
         _navigatorKey.currentState!.push(
@@ -108,7 +114,32 @@ class _ExpEdgeAppState extends State<ExpEdgeApp> {
           ),
         );
       } else {
-        print('❌ Navigator not ready yet');
+        debugPrint('❌ Navigator not ready yet, retrying...');
+        // Retry with exponential backoff for Windows
+        _retryNavigation(token, 1);
+      }
+    });
+  }
+
+  void _retryNavigation(String token, int attempt) {
+    if (attempt > 5) {
+      debugPrint('❌ Failed to navigate after 5 attempts');
+      return;
+    }
+
+    final delay = Duration(milliseconds: 500 * attempt);
+    debugPrint('⏳ Retry attempt $attempt after ${delay.inMilliseconds}ms');
+    
+    Future.delayed(delay, () {
+      if (_navigatorKey.currentState != null) {
+        debugPrint('✅ Navigator ready on attempt $attempt');
+        _navigatorKey.currentState!.push(
+          MaterialPageRoute(
+            builder: (_) => InviteRegistrationScreen(token: token),
+          ),
+        );
+      } else {
+        _retryNavigation(token, attempt + 1);
       }
     });
   }
@@ -128,7 +159,6 @@ class _ExpEdgeAppState extends State<ExpEdgeApp> {
         useMaterial3: true,
       ),
       home: const SplashScreen(),
-      // Remove the named routes - using programmatic navigation instead
     );
   }
 }

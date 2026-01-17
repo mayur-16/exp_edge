@@ -89,6 +89,11 @@ msix_config:
   capabilities: internetClient,internetClientServer,privateNetworkClientServer
   architecture: x64
   install_certificate: false
+  # Deep linking protocol configuration for Windows
+  protocol_activation:
+    - protocol: https
+      name: expedge.mangaloredrives.in
+      executable: exp_edge.exe
 
 flutter_launcher_icons:
   android: "launcher_icon"
