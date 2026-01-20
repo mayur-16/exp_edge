@@ -2,7 +2,7 @@ name: exp_edge
 description: Construction expense tracking app
 publish_to: 'none'
 
-version: 1.0.0+3
+version: 1.0.0+4
 
 
 environment:
@@ -83,8 +83,8 @@ msix_config:
   display_name: ExpEdge
   publisher_display_name: Tequra Solutions
   identity_name: com.expedge.app
-  publisher: CN=Tequra Solutions 
-  msix_version: 1.0.0.3
+  publisher: CN=Msix Testing, O=Msix Testing Corporation, S=Some-State, C=US
+  msix_version: 1.0.0.4
   logo_path: assets/icon/wallet.png
   capabilities: internetClient,internetClientServer,privateNetworkClientServer
   architecture: x64

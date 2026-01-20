@@ -6,7 +6,7 @@
          IgnorableNamespaces="uap mp uap3">
 
   <Identity Name="com.expedge.app"
-            Publisher="CN=TequraSolutions"
+            Publisher="CN=Msix Testing, O=Msix Testing Corporation, S=Some-State, C=US"
             Version="1.0.0.0" />
 
   <Properties>
